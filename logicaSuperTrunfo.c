@@ -19,7 +19,7 @@ typedef struct{
 void cadastroCartas(Cartas *carta);
 void mostrarCartas(Cartas *carta, int numCartas);
 void calcularPropriedades(Cartas *carta);
-void compararCartas(Cartas *carta1, Cartas *carta2);
+void compararCartas(Cartas *carta1, Cartas *carta2, int att);
 double calcular_pibPerCapta(Cartas *carta);
 double calcular_densidadePopulacional(Cartas *carta);
 double calcular_superPoder(Cartas *carta);
@@ -28,15 +28,7 @@ int main() {
     setlocale(LC_ALL, "Portuguese");
     setlocale(LC_NUMERIC, "C");
 
-    int numCartas=2, esc1=1, esc2=2;
-
-    do{printf("Digite quantas cartas a serem cadastradas(min2): ");
-    scanf("%d", &numCartas);
-    while(getchar() != '\n');
-    if(numCartas<2){
-        printf("\nERRO! Quantidade minima de cartas(2)\n");
-    }
-    }while(numCartas<2);
+    int numCartas=2, esc1=1, esc2=2, escAtt=0;
 
     Cartas *carta = (Cartas *)malloc(numCartas * sizeof(Cartas)); // Criando um array de cartas
 
@@ -59,17 +51,24 @@ int main() {
 
     // Comparação das Cartas
     printf("\n     ----- Comparacao das Cartas -----\n");
-    printf("-------------------------------------------\n");
-    printf("Escolha a primeira carta (1 a %d): ", numCartas);
-    scanf("%d", &esc1);
-    printf("Escolha a segunda carta (1 a %d): ", numCartas);
-    scanf("%d", &esc2);
-
-    if(esc1>0 && esc2<=numCartas && esc2>0 && esc2 <= numCartas){
-        compararCartas(&carta[esc1-1], &carta[esc2-1]);
-    }else{
-        printf("Escolhas invalidas. Por favor, digite numeros entre 1 e %d.\n", numCartas);
-    }
+    do{
+        // Menu de escolha de atributo:
+        printf("\nEscolha o atributo a ser comparado:\n");
+        printf("1.Populacao\n");
+        printf("2.Area\n");
+        printf("3.PIB\n");
+        printf("4.Pontos Turisticos\n");
+        printf("5.PIB per Capita\n");
+        printf("6.Densidade Populacional\n");
+        printf("7.Super Poder\n");
+        printf("8.Sair\n");
+        printf("Sua escolha: \n");
+        scanf("%d", &escAtt);
+        while(getchar() != '\n');
+        
+        // Chama a função de comparar as propriedades de cada carta
+        compararCartas(&carta[esc1-1], &carta[esc2-1], escAtt);
+    }while(escAtt != 8);
 
     // libera o malloc
     free(carta); 
@@ -181,114 +180,91 @@ void mostrarCartas(Cartas *carta, int numCartas){
     }
 }
 
-void compararCartas(Cartas *carta1, Cartas *carta2){
-    int pontCarta1=0, pontCarta2=0;
-
-    printf("\n----- Comparando Carta 1: %s vs Carta 2: %s -----\n", carta1->cidade, carta2->cidade);
-
-    // Comparacoes das Propriedades
-    // Populacao
-    printf("\n----- Populacao -----\n");
-    printf("\nCarta 1: %s(%s): %d\n", carta1->cidade, carta1->estado, carta1->populacao);
-    printf("\nCarta 2: %s(%s): %d\n", carta2->cidade, carta2->estado, carta2->populacao);
-    if(carta1->populacao > carta2->populacao){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->populacao < carta2->populacao){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
+void compararCartas(Cartas *carta1, Cartas *carta2, int att){
+    switch(att){
+        case 1: // População
+            printf("\n--- Populacao ---\n\n");
+            printf("\nCarta 1: %s(%s): %d\n", carta1->cidade, carta1->estado, carta1->populacao);
+            printf("\nCarta 2: %s(%s): %d\n", carta2->cidade, carta2->estado, carta2->populacao);
+            if(carta1->populacao > carta2->populacao){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->populacao < carta2->populacao){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 2: // Área
+            printf("\n--- Area ---\n\n");
+            printf("\nCarta 1: %s(%s): %.2lf km2\n", carta1->cidade, carta1->estado, carta1->area);
+            printf("\nCarta 2: %s(%s): %.2lf km2\n", carta2->cidade, carta2->estado, carta2->area);
+            if(carta1->area > carta2->area){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->area < carta2->area){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 3: // PIB
+            printf("\n--- PIB ---\n\n");
+            printf("\nCarta 1: %s(%s): %.2lf bilhoes de reais\n", carta1->cidade, carta1->estado, carta1->pib);
+            printf("\nCarta 2: %s(%s): %.2lf bilhoes de reais\n", carta2->cidade, carta2->estado, carta2->pib);
+            if(carta1->pib > carta2->pib){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->pib < carta2->pib){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 4: // Pontos Turisticos
+            printf("\n--- Pontos Turisticos ---\n\n");
+            printf("\nCarta 1: %s(%s): %d\n", carta1->cidade, carta1->estado, carta1->pontosTuristicos);
+            printf("\nCarta 2: %s(%s): %d\n", carta2->cidade, carta2->estado, carta2->pontosTuristicos);
+            if(carta1->pontosTuristicos > carta2->pontosTuristicos){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->pontosTuristicos < carta2->pontosTuristicos){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 5: // PIB per Capita
+            printf("\n--- PIB per Capita ---\n\n");
+            printf("\nCarta 1: %s(%s): %.2lf R$\n", carta1->cidade, carta1->estado, carta1->pibPerCapta);
+            printf("\nCarta 2: %s(%s): %.2lf R$\n", carta2->cidade, carta2->estado, carta2->pibPerCapta);
+            if(carta1->pibPerCapta> carta2->pibPerCapta){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->pibPerCapta < carta2->pibPerCapta){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 6: // Densidade Populacional
+            printf("\n--- Densidade Populacional ---\n\n");
+            printf("\nCarta 1: %s(%s): %.2lf hab / km2\n", carta1->cidade, carta1->estado, carta1->densPop);
+            printf("\nCarta 2: %s(%s): %.2lf hab / km2\n", carta2->cidade, carta2->estado, carta2->densPop);
+            if(carta1->densPop < carta2->densPop){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->densPop > carta2->densPop){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        case 7: // Super Poder
+            printf("\n--- Super Poder ---\n\n");
+            printf("\nCarta 1: %s(%s): %.2lf\n", carta1->cidade, carta1->estado, carta1->superPoder);
+            printf("\nCarta 2: %s(%s): %.2lf\n", carta2->cidade, carta2->estado, carta2->superPoder);
+            if(carta1->superPoder > carta2->superPoder){
+                printf("\n%s vence a rodada!\n\n", carta1->cidade);
+            }else if(carta1->superPoder < carta2->superPoder){
+                printf("\n%s vence a rodada!\n\n", carta2->cidade);
+            }else{
+                printf("\nEmpate!\n\n");  
+            }
+            break;
+        }
     }
-
-    //Área
-    printf("\n----- Area -----\n");
-    printf("\nCarta 1: %s(%s): %.2lf km2\n", carta1->cidade, carta1->estado, carta1->area);
-    printf("\nCarta 2: %s(%s): %.2lf km2\n", carta2->cidade, carta2->estado, carta2->area);
-    if(carta1->area > carta2->area){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->area < carta2->area){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-
-    //PIB
-    printf("\n----- PIB -----\n");
-    printf("\nCarta 1: %s(%s): %.2lf bilhoes de reais\n", carta1->cidade, carta1->estado, carta1->pib);
-    printf("\nCarta 2: %s(%s): %.2lf bilhoes de reais\n", carta2->cidade, carta2->estado, carta2->pib);
-    if(carta1->pib > carta2->pib){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->pib < carta2->pib){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-
-    //Pontos Turísticos
-    printf("\n----- Pontos Turisticos -----\n");
-    printf("\nCarta 1: %s(%s): %d\n", carta1->cidade, carta1->estado, carta1->pontosTuristicos);
-    printf("\nCarta 2: %s(%s): %d\n", carta2->cidade, carta2->estado, carta2->pontosTuristicos);
-    if(carta1->pontosTuristicos > carta2->pontosTuristicos){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->pontosTuristicos < carta2->pontosTuristicos){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-
-    // Densidade Populacional (Menor vence)
-    printf("\n----- Densidade Populacional -----\n");
-    printf("\nCarta 1: %s(%s): %.2lf hab / km2\n", carta1->cidade, carta1->estado, carta1->densPop);
-    printf("\nCarta 2: %s(%s): %.2lf hab / km2\n", carta2->cidade, carta2->estado, carta2->densPop);
-    if(carta1->densPop < carta2->densPop){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->densPop > carta2->densPop){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-
-    // PIB per Capita   
-    printf("\n----- PIB per Capita -----\n");
-    printf("\nCarta 1: %s(%s): %.2lf R$\n", carta1->cidade, carta1->estado, carta1->pibPerCapta);
-    printf("\nCarta 2: %s(%s): %.2lf R$\n", carta2->cidade, carta2->estado, carta2->pibPerCapta);
-    if(carta1->pibPerCapta > carta2->pibPerCapta){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->pibPerCapta < carta2->pibPerCapta){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-
-    // Super Poder   
-    printf("\n----- Super Poder -----\n");
-    printf("\nCarta 1: %s(%s): %.2lf\n", carta1->cidade, carta1->estado, carta1->superPoder);
-    printf("\nCarta 2: %s(%s): %.2lf\n", carta2->cidade, carta2->estado, carta2->superPoder);
-    if(carta1->superPoder > carta2->superPoder){
-        printf("\nCarta 1 vence!\n");
-        pontCarta1++;
-    }else if(carta1->superPoder < carta2->superPoder){
-        printf("\nCarta 2 vence!\n");
-        pontCarta2++;
-    }else{
-        printf("\nEmpate!\n");  
-    }
-    printf("\n----- Resultado -----\n");
-    if(pontCarta1>pontCarta2){
-        printf("\nCarta 1: %s venceu com %d pontos!\n", carta1->cidade,pontCarta1);
-    }else{
-        printf("\nCarta 2: %s venceu com %d pontos!\n", carta2->cidade,pontCarta2);
-    }
-
-}
